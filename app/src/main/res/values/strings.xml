@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NBATeamViewer</string>
+    <string name="teams_win_loss_text">%1$d W - %2$d L</string>
 </resources>
