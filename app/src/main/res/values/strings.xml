@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">NBATeamViewer</string>
     <string name="teams_win_loss_text">%1$d W - %2$d L</string>
+    <string name="teams_win_loss_detailed_text">Wins: %1$d, Losses: %2$d</string>
+    <string name="team_roster">Team Roster</string>
+    <string name="player_name">%1$s %2$s</string>
+    <string name="player_position_number">%s / #%d</string>
 </resources>
