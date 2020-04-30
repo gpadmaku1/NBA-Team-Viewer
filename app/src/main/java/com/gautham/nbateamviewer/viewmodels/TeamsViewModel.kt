@@ -1,7 +1,8 @@
 package com.gautham.nbateamviewer.viewmodels
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.viewModelScope
 import com.gautham.nbateamviewer.MainActivity
@@ -15,7 +16,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class TeamsViewModel : ViewModel() {
+class TeamsViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         fun get(activity: MainActivity) =
             ViewModelProviders.of(activity).get(TeamsViewModel::class.java)
@@ -30,7 +31,8 @@ class TeamsViewModel : ViewModel() {
 
     fun fetchTeams() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = NetworkUtils.getRequest(Constants.API_URL)
+            val networkUtils = NetworkUtils(getApplication<Application>().applicationContext)
+            val response = networkUtils.getRequest(Constants.API_URL)
             if (response != null) {
                 val type = Types.newParameterizedType(List::class.java, Team::class.java)
                 val adapter: JsonAdapter<List<Team>> = moshi.adapter(type)
