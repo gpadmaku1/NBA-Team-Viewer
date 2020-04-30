@@ -2,10 +2,9 @@ package com.gautham.nbateamviewer.utils
 
 import android.content.Context
 import android.util.Log
-import okhttp3.Cache
-import okhttp3.CacheControl
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
+import java.io.File
+import java.io.IOException
 import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
 
@@ -16,25 +15,16 @@ class NetworkUtils(applicationContext: Context) {
         private val TAG: String = NetworkUtils::class.java.simpleName
     }
 
-    private val cache = Cache(applicationContext.cacheDir, cacheSize)
-    private val client = OkHttpClient.Builder().cache(cache).build()
+    var httpCacheDirectory = File(applicationContext.cacheDir, "http-cache")
+    private val cache = Cache(httpCacheDirectory, cacheSize)
+    private val client =
+        OkHttpClient.Builder().addNetworkInterceptor(CacheInterceptor()).cache(cache).build()
     private val requestBuilder = Request.Builder()
 
     fun getRequest(url: String): String? {
         try {
-            val request = requestBuilder.url(url).cacheControl(
-                CacheControl.Builder().maxStale(
-                    14,
-                    TimeUnit.DAYS
-                ).noCache().build()
-            ).build()
+            val request = requestBuilder.url(url).build()
             val response = client.newCall(request).execute()
-            val cacheResponse = response.cacheResponse()
-            val networkResponse = response.networkResponse()
-            //always returns null
-            Log.d(TAG, "cacheResponse: ${cacheResponse.toString()}")
-            //always has the response
-            Log.d(TAG, "networkResponse: ${networkResponse.toString()}")
             response.apply {
                 if (isSuccessful) {
                     body()?.string()?.let {
@@ -56,5 +46,22 @@ class NetworkUtils(applicationContext: Context) {
             getRequest(url)
         }
         return null
+    }
+}
+
+class CacheInterceptor : Interceptor {
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val response = chain.proceed(chain.request())
+
+        val cacheControl = CacheControl.Builder()
+            .maxAge(15, TimeUnit.DAYS) // 15 days cache
+            .build()
+
+        return response.newBuilder()
+            .removeHeader("Pragma")
+            .removeHeader("Cache-Control")
+            .header("Cache-Control", cacheControl.toString())
+            .build()
     }
 }
