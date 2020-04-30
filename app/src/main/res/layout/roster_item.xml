@@ -17,14 +17,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/black"
-            android:textSize="20sp"
+            android:textSize="16sp"
             tools:text="James Harden" />
 
         <TextView
             android:id="@+id/position_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="12sp"
             tools:text="PG / #13" />
 
     </LinearLayout>

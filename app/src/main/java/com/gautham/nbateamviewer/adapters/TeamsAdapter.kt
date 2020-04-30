@@ -30,4 +30,6 @@ class TeamsAdapter(private var onTeamSelectedListener: OnTeamSelectedListener) :
     }
 
     fun getTeam(position: Int): Team = nbaTeams[position]
+
+    fun getTeams(): List<Team> = nbaTeams
 }
